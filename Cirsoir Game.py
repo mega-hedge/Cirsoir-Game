@@ -1,172 +1,194 @@
-import pygame as pg # подключение pygame и сокращение до "pg"
-import pyautogui as pag # подключение PyAutoGui и сокращение до "pag"
-import random as rnd # подключение random и сокращение до "rnd"
-import time as tm # подключение time и сокращение до "tm"
+from pygame import init, display, font, QUIT, key, K_a, K_d, K_w, K_s, draw, event # import pygame
+init() # init pygame
 
-pg.init() # инициализация pygame
+from pyautogui import alert, prompt # import pyautogui
+from random import randint # import random
+from time import time # import time
 
-
-# СТАРТОВЫЙ ЭКРАН
-game_name = "Cirsoir"
-
-m_task = int( pag.prompt("Управление: \n[W] - вверх \n[A] - влево \n[S] - вниз\n[D] - вправо \n\nВведите цель (кол-во монет):", game_name) )
+from os import system
+system('cls')
+print( f"{'=' * 3} Do not close this window! {'=' * 3}" )
 
 
-# ПЕРЕМЕННЫЕ (параметры) ОКНА
-win_x = 800
-win_y = 700
+# Make Win
+win_size_x = 800 # x size win
+win_size_y = 700 # y size win
 
-win = pg.display.set_mode( (win_x, win_y) ) # создание окна
-pg.display.set_caption(game_name) # определение заголовка окна
+win = display.set_mode( (win_size_x, win_size_y) ) # make win
 
+    # Make win name
+win_name = 'Cirsoir'
+display.set_caption(win_name)
 
-# ПЕРЕМЕННЫЕ (параметры) ТЕКСТА
-win_font = pg.font.Font(None, 20) # шрифт для текста на экране
+    # Input coin task
+coin_task = int( prompt( '''Controls: 
+[W] - Up
+[S] - Down
+[A] - Left
+[D] - Right
 
-
-# ПЕРЕМЕННЫЕ (параметры) ИГРОКА
-# размеры
-pl_widht = 30 # ширина
-pl_height = 30  # длина
-
-pl_x = win_x / 2 - pl_widht / 2 # положение по х
-pl_y = win_y / 2 - pl_widht / 2 # положение по у
-
-pl_speed = 16 # скорость
-
-pl_hp = 10
+Enter task (coins): ''', win_name ) )
 
 
-# ПЕРЕМЕННЫЕ (параметры) МОНЕТ
-# размеры
-m_widht = 10 # ширина
-m_height = 10 # длина
-
-# положение
-m_x = rnd.randint(50, win_x - 20) # положение по х
-m_y = rnd.randint(50, win_y - 20) # положение по у
-
-m_count = 0 # счётчик общего кол-ва монет у игрока
+win_font = font.Font(None, 20) # text font
 
 
-# ПЕРЕМЕННЫЕ (параметры) ВРАГОВ
-# размеры
-v_widht = pl_widht - 10 # ширина
-v_height = pl_height - 10 # длина
+# Player Vars
 
-# положение
-v_x = rnd.randint(50, win_x - 20) # положение по х
-v_y = rnd.randint(50, win_y - 20) # положение по у
+    # player size
+player_widht = 30 # player widht
+player_height = 30  # player height
 
-tm_start = int( tm.time() ) # начало отсчёта времени собирания всех монет игроком
+player_x = win_size_x / 2 - player_widht / 2 # x player position
+player_y = win_size_y / 2 - player_widht / 2 # y player position
 
+player_speed = 1 # player speed
 
-# ========== ЦИКЛ WHILE ==========
-run_win = True # переменная состояния цикла while
-while run_win:
-
-    win.fill( (108, 162, 108) ) # цвет окна "(red, green, blue)". (задан чёрный цвет) Очищает экран при каждом проходе цикла
-    pg.time.delay(16) # задержка между повторениями цикла while в мс.
+player_lifes = 10 # player lifes
 
 
-    # обработка выхода их цикла while
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            run_win = False
+# Coin Vars
+
+    # coin size
+coin_widht = 10 # coin widht
+coin_height = 10 # coin height
+
+    # coin position
+coin_x = randint(50, win_size_x - 20) # x coin position
+coin_y = randint(50, win_size_y - 20) # y coin position
+
+coin_count = 0 # coin counter
 
 
-    # ПРОВЕРКА НАЖАТЫХ КЛАВИШ с проверкой границ окна
-    keys = pg.key.get_pressed()
+# Enemy Vars
+    # enemy size
+enemy_widht = player_widht - 10 # widht
+enemy_height = player_height - 10 # height
 
-    # left, right
-    if keys[pg.K_a] and pl_x > (pl_widht / 2 - 5) or keys[pg.K_LEFT] and pl_x > (pl_widht / 2 - 5): # left
-        pl_x -= pl_speed
-
-    if keys[pg.K_d] and pl_x < (win_x - (pl_widht + 10) ) or keys[pg.K_RIGHT] and pl_x < (win_x - (pl_widht + 10) ): # right
-        pl_x += pl_speed
-
-    # up, down
-    if keys[pg.K_w] and pl_y > (pl_height / 2 - 5) or keys[pg.K_UP] and pl_y > (pl_height / 2 - 5): # up
-        pl_y -= pl_speed
-
-    if keys[pg.K_s] and pl_y < (win_y - (pl_height + 10) ) or keys[pg.K_DOWN] and pl_y < (win_y - (pl_height + 10) ): # down
-        pl_y += pl_speed
+    # enemy position
+enemy_x = randint( 50, win_size_x - 20 ) # x enemy position
+enemy_y = randint( 50, win_size_y - 20 ) # y enemy position
 
 
+time_start = int( time() ) # Time Counter Var
 
-    # СБОР МОНЕТ
-    if(m_x + pl_widht) > pl_x > (m_x - pl_widht) and (m_y + pl_height) > pl_y > (m_y - pl_height):
-        m_count += 1
-        m_task -= 1
+
+# ========== WHILE ==========
+win_run = True # win var
+
+while win_run: # main while
+
+    win.fill( (108, 162, 108) ) # win color (rgb)
+
+
+    # Exit From While
+    for event_ in event.get():
+        if event_.type == QUIT: win_run = False
+
+
+    # Key Control
+    keys = key.get_pressed() # read keys
+
+        # up, down
+    if keys[K_w] and player_y > (player_height / 2 - 5): player_y -= player_speed # up
+    if keys[K_s] and player_y < (win_size_y - (player_height + 10) ): player_y += player_speed # down
+
+        # left, right
+    if keys[K_a] and player_x > (player_widht / 2 - 5): player_x -= player_speed # left
+    if keys[K_d] and player_x < (win_size_x - (player_widht + 10) ): player_x += player_speed # right
+
+
+    # Coin Hitbox
+    if(coin_x + player_widht) > player_x > (coin_x - player_widht) and (coin_y + player_height) > player_y > (coin_y - player_height):
+        coin_count += 1
+        coin_task -= 1
         
-        # положение монеты
-        m_x = rnd.randint(50, win_x - 20) # положение по х
-        m_y = rnd.randint(50, win_y - 20) # положение по у
+        # coin position
+        coin_x = randint(50, win_size_x - 20) # x coin position
+        coin_y = randint(50, win_size_y - 20) # y coin position
         
-        # положение врага
-        v_x = rnd.randint(50, win_x - 20) # положение по х
-        v_y = rnd.randint(50, win_y - 20) # положение по у
+        # Enemy position
+        enemy_x = randint( 50, win_size_x - 20 ) # x enemy position
+        enemy_y = randint( 50, win_size_y - 20 ) # y enemy position
 
-    # СТОЛКНОВЕНИЕ С ВРАГАМИ
-    if (v_x + pl_widht) > pl_x > (v_x - pl_widht) and (v_y + pl_height) > pl_y > (v_y - pl_height):
-        pl_hp -= 1
 
-        # положение врага
-        v_x = rnd.randint(50, win_x - 20) # положение по х
-        v_y = rnd.randint(50, win_y - 20) # положение по у       
+    # Enemy Hitbox
+    if (enemy_x + player_widht) > player_x > (enemy_x - player_widht) and (enemy_y + player_height) > player_y > (enemy_y - player_height):
+        player_lifes -= 1
+
+        # Enemy position
+        enemy_x = randint( 50, win_size_x - 20 ) # x enemy position
+        enemy_y = randint( 50, win_size_y - 20 ) # y enemy position   
     
     
-    pg.draw.rect(win, (0, 255, 0), (pl_x, pl_y, pl_widht, pl_height) ) # отрисовка квадрата игрока, цвет = зелёный
-    pg.draw.rect(win, (255, 255, 0), (m_x, m_y, m_widht, m_height) ) # отрисовка монеты, цвет = жёлтый
-    if m_x != v_x and m_y != v_y and pl_x != v_x and pl_y != v_y:
-        pg.draw.rect(win, (255, 0, 0), (v_x, v_y, v_widht, v_height) ) # отрисовка врага, цвет = красный
-    else:
-        # положение
-        v_x = rnd.randint(50, win_x - 20) # положение по х
-        v_y = rnd.randint(50, win_y - 20) # положение по у
+    # Draw Elements
+
+        # Draw Player
+    draw.rect(win, 
+             (0, 255, 0), # player color (rgb)
+             (player_x, player_y, player_widht, player_height) # player position and size
+             )
+
+        # Draw coin
+    draw.rect(win, 
+             (255, 255, 0), # coin color (rgb)
+             (coin_x, coin_y, coin_widht, coin_height) ) # coin position and size
+
+        # Draw Enemy
+    if coin_x != enemy_x and coin_y != enemy_y and player_x != enemy_x and player_y != enemy_y: # if all hitbox not on:
+        draw.rect(win, 
+                 (255, 0, 0), # enemy color (rgb)
+                 (enemy_x, enemy_y, enemy_widht, enemy_height) ) # enemy position and size
+
+    else: # else reset enemy position
+        enemy_x = randint( 50, win_size_x - 20 ) # x enemy position
+        enemy_y = randint( 50, win_size_y - 20 ) # y enemy position
 
 
-    # Вывод информации
-    win_m_count_text = win_font.render(f"Собрано монет: {m_count}", True, (255, 255, 0) )
-    win_m_task_text = win_font.render(f"Осталось собрать монет: {m_task}", True, (255, 0, 0) )
+    # Write Information 
+    win_coin_count_text = win_font.render(f'Collected Coins: {coin_count}', # text
+                                          True, (255, 255, 0) ) # text color
 
-    tm_new = int( tm.time() )
-    win_tm_text = win_font.render(f"Прошло {tm_new - tm_start} сек ({ int( (tm_new - tm_start) / 60 ) } мин)",
-                                  True,
-                                  (0, 0, 255)
-                                  )
-    win_pl_hp_text = win_font.render(f"Осталось жизней: {pl_hp}", True, (0, 255, 0) )
+    win_coin_task_text = win_font.render(f'Coins Task: {coin_task}', # text
+                                         True, (255, 0, 0) ) # text color
+
+    time_new = int( time() ) # Read time
+
+    win_tm_text = win_font.render( f'Time: {time_new - time_start} sec,{ int( (time_new - time_start) / 60 ) } min', # text
+                                  True, (0, 0, 255) ) # text color
+
+    win_player_lifes_text = win_font.render(f'Lifes: {player_lifes}', # text
+                                            True, (0, 255, 0) ) # color
     
     
-    win.blit(win_m_count_text, (10, 10) )
-    win.blit(win_m_task_text, (10, 30) )
+        # Print Information
+    win.blit(win_coin_count_text, (10, 10) )
+    win.blit(win_coin_task_text, (10, 30) )
     win.blit(win_tm_text, (10, 50) )
-    win.blit(win_pl_hp_text, (10, 70) )
+    win.blit(win_player_lifes_text, (10, 70) )
 
 
-    if m_task <= 0:
-        tm_end = int( tm.time() )  # конец отсчёта времени собирания всех монет игроком
-        tm_all = tm_end - tm_start # расчёт проведённого времени игроком в игре
+    if coin_task <= 0: # if all coins collected
+        tm_end = int( time() ) # time end
+        tm_all = tm_end - time_start # calculation time spent by the player in the game
 
-        run_win = False
+        win_run = False # quit win
 
         # Отображение информации игроку о его достижениях
-        pag.alert(f"""Вы собрали {m_count} монет за {tm_all} сек (~{ int(tm_all / 60) } мин)!
-(~1 монета за {tm_all / m_count} сек)""",
-                  game_name,
-                  button = "Выйти из игры")
+        alert( f'''Time: {tm_all} sec   ≈{ int(tm_all / 60) } min
+≈ 1 coin per {tm_all / coin_count} sec''',
+                  win_name,
+                  button = 'Quit')
 
 
-    if pl_hp <= 0:
-        # Отображение информации игроку о его достижениях
-        pag.alert(f"Вы проиграли собрав монет: {m_count}",
-                  game_name,
-                  button = "Выйти из игры")
+    if player_lifes <= 0: # If player lose
+        # Print player's achievements
+        alert(f': {coin_count}',
+                  win_name, # win name text
+                  button = 'Quit') # button text
 
-        run_win = False
+        win_run = False # stop win run
 
 
-    if run_win == True:
-        pg.display.update() # обновление дисплея
-    else:
-        pg.quit()
+    if win_run == True: display.update() # reset display
+    else: quit()
