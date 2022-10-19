@@ -6,21 +6,13 @@ from random import randint # import random
 from time import time # import time
 
 from os import system
-system('cls')
-print( f"{'=' * 3} Do not close this window! {'=' * 3}" )
+system('mode 17, 1')
 
 
-# Make Win
-win_size_x = 800 # x size win
-win_size_y = 700 # y size win
-
-win = display.set_mode( (win_size_x, win_size_y) ) # make win
-
-    # Make win name
 win_name = 'Cirsoir'
-display.set_caption(win_name)
 
-    # Input coin task
+
+# Coin Task
 coin_task = int( prompt( '''Controls: 
 [W] - Up
 [S] - Down
@@ -29,8 +21,16 @@ coin_task = int( prompt( '''Controls:
 
 Enter task (coins): ''', win_name ) )
 
-
 win_font = font.Font(None, 20) # text font
+
+
+# Make Win
+win_size_x = 800 # x size win
+win_size_y = 700 # y size win
+
+win = display.set_mode( (win_size_x, win_size_y) ) # make win
+
+display.set_caption(win_name) # Make win name
 
 
 # Player Vars
